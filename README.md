@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/michipili/broken.svg?branch=master)](https://travis-ci.org/michipili/broken?branch=master)
+
 # Broken
 
 The Broken project aims at delivering an easy-to use testing framework

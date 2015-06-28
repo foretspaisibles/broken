@@ -1,0 +1,12 @@
+language: c
+sudo: false
+addons:
+  apt:
+    sources:
+    - avsm
+    packages:
+    - ocaml
+    - opam
+    - ocaml-native-compilers
+install: sh -ex ./Library/Ancillary/autoinstall bmake bsdowl ocamlfind
+script: sh -ex ./Library/Ancillary/travisci
