@@ -1,12 +1,9 @@
-### Makefile -- Trip & Trap
+### Makefile -- Broken
 
-# Author: Michael Grünewald
-# Date: Wed Apr 16 11:23:08 CEST 2014
-
-# Gasoline (https://github.com/michipili/gasoline)
-# This file is part of Gasoline
+# Broken (https://github.com/michipili/broken)
+# This file is part of Broken
 #
-# Copyright © 2014 Michael Grünewald
+# Copyright © 2014–2015 Michael Grünewald
 #
 # This file must be used under the terms of the CeCILL-B.
 # This source file is licensed as described in the file COPYING, which
@@ -14,12 +11,24 @@
 # are also available at
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.txt
 
-SUBDIR+=	unittest
-SUBDIR+=	unicode
-SUBDIR+=	authorkit
-SUBDIR+=	configuration
-SUBDIR+=	appkit
+PROGRAM=		unit-testing
+SRCS+=			main.ml
 
-.include "gasoline.subdir.mk"
+EXTERNAL=		ocaml.findlib:unix
+
+TESTS=			test-help-screen
+TESTS+=			test-suites-list
+TESTS+=			test-expected-failures-list
+
+test-help-screen.got: ${PROGRAM}
+	./${PROGRAM} -h 2> ${.TARGET}
+
+test-suites-list.got: ${PROGRAM}
+	./${PROGRAM} -l > ${.TARGET}
+
+test-expected-failures-list.got: ${PROGRAM}
+	./${PROGRAM} -x > ${.TARGET}
+
+.include "broken.trip-trap.mk"
 
 ### End of file `Makefile'

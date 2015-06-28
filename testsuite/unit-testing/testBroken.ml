@@ -1,4 +1,4 @@
-(* Main -- Testing our unit testing framework
+(* TestUnitTest -- Testing our unit testing framework
 
 Broken (https://github.com/michipili/broken)
 This file is part of Broken
@@ -11,4 +11,9 @@ you should have received as part of this distribution. The terms
 are also available at
 http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.txt *)
 
-let () = Broken.main ()
+open Broken
+
+let init suite =
+  ignore suite
+
+let () = with_registered_suite "broken" init

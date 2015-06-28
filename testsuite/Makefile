@@ -1,12 +1,9 @@
 ### Makefile -- Test suite
 
-# Author: Michael Grünewald
-# Date: Tue Nov  5 22:54:56 CET 2013
-
-# GIT-Toolkit (https://github.com/michipili/gasoline)
-# This file is part of Gasoline
+# Broken (https://github.com/michipili/broken)
+# This file is part of Broken
 #
-# Copyright © 2013 Michael Grünewald
+# Copyright © 2013–2015 Michael Grünewald
 #
 # This file must be used under the terms of the CeCILL-B.
 # This source file is licensed as described in the file COPYING, which
@@ -14,12 +11,12 @@
 # are also available at
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.txt
 
-SUBDIR+=	unit-testing
-SUBDIR+=	trip-trap
+SUBDIR+=		unit-testing
+SUBDIR+=		trip-trap
 
-install build:
+all build install:
 	${NOP}
 
-.include "gasoline.subdir.mk"
+.include "generic.subdir.mk"
 
 ### End of file `Makefile'

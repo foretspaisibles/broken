@@ -50,3 +50,7 @@ mpxerr.log
 # Wiki
 #
 Wiki/
+#
+# Local customization
+#
+Makefile.local
