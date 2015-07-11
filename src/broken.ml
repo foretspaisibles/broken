@@ -231,20 +231,17 @@ let make_fixture setup tear_down = {
   tear_down;
 }
 
-let bracket setup f x tear_down =
+let supervise_fixture fixture f x =
   let supervise action =
     try action ()
     with exn -> (eprintf "UnitTest: fixture exception: %s\n"
                    (Printexc.to_string exn);
                  exit exit_unavailable)
   in
-  let _ = supervise setup in
+  let _ = supervise fixture.setup in
   let a = f x in
-  let _ = supervise tear_down in
-    a
-
-let apply_fixture fixture f x =
-  bracket fixture.setup f x fixture.tear_down
+  let _ = supervise fixture.tear_down in
+  a
 
 
 let relax =
@@ -498,7 +495,7 @@ object(self)
   method case_run ident fixture c =
     let path = path_cat ident c.ident in
     let _ = self#case_begin path c in
-    let o = apply_fixture fixture run_case c in
+    let o = supervise_fixture fixture run_case c in
     let _ = self#case_outcome path c o in
     let _ = self#case_end path c in
       outcome_is_successful o || c.expected_failure
