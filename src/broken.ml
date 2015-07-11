@@ -198,6 +198,7 @@ let equal_precision n x y =
 let assert_precision label ?expected_failure n f x y =
   assert_equal ?expected_failure ~equal:(equal_precision n) label f x y
 
+
 (* Compound test cases *)
 
 let case_prepend prefix t = {
@@ -370,19 +371,21 @@ type suite_item =
   | Suite of fixture * suite
 and suite = {
   suite_ident: string;
+  suite_description: string;
   suite_fixture: fixture;
   suite_queue: suite_item Queue.t;
 }
 
-let make ?(fixture = relax) ?init ident =
+let make_suite ?(fixture = relax) ?init ident description =
   let suite = {
     suite_ident = ident;
+    suite_description = description;
     suite_fixture = fixture;
     suite_queue = Queue.create();
   }
   in
   ( match init with
-  | Some f -> f suite
+  | Some(f) -> f suite
   | None -> () );
   suite
 
@@ -391,9 +394,6 @@ let add_case ?(fixture = relax) s case =
 
 let add_suite ?(fixture = relax) s suite =
   Queue.add (Suite(fixture, suite)) s.suite_queue
-
-let add_challenge s f c =
-  List.iter (add_case s) (List.map f c)
 
 
 (* Supervisor *)
@@ -652,7 +652,7 @@ let verbose = new verbose_supervisor
 let concise = new concise_supervisor
 
 
-(* Root suite registry *)
+(* Test suite interface *)
 
 type root = {
   root_suite: suite;
@@ -662,23 +662,21 @@ type root = {
 let root_registry =
   Hashtbl.create expected_sz
 
+let register ?(prerequisite = []) suite =
+  Hashtbl.add root_registry suite.suite_ident {
+    root_suite = suite;
+    root_prerequisite = prerequisite;
+  }
+
 let mem =
   Hashtbl.mem root_registry
 
+let suite ?fixture ident description lst =
+  let s = make_suite ?fixture ident description in
+  List.iter (add_case s) lst;
+  register s
 
-let register ?(prerequisite = []) s =
-  if List.for_all mem prerequisite then
-    Hashtbl.add root_registry s.suite_ident {
-      root_suite = s;
-      root_prerequisite = prerequisite;
-    }
-  else failwith "unitary test: unknown dependency"
-
-let with_registered_suite ?fixture ?prerequisite name init =
-  let suite = make ?fixture ~init name in
-  register ?prerequisite suite
-
-let package ?(prerequisite = []) (name, l) =
+let package ident description lst =
   let getsuite x =
     let r =
       try Hashtbl.find root_registry x
@@ -689,13 +687,10 @@ let package ?(prerequisite = []) (name, l) =
     else
       r.root_suite
   in
-  let subsuite =
-    List.map getsuite l
-  in
-  let suite = make name in
-  List.iter (add_suite suite) subsuite;
-  List.iter (Hashtbl.remove root_registry) l;
-  register ~prerequisite suite
+  let suite = make_suite ident description in
+  List.iter (add_suite suite) (List.map getsuite lst);
+  List.iter (Hashtbl.remove root_registry) lst;
+  register suite
 
 
 module Ident = Set.Make(String)

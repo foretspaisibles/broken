@@ -16,25 +16,19 @@ open Broken
 
 module DatabaseOracle =
 struct
-  let init suite =
-    List.iter (add_case suite) [
-      assert_success "connectivity";
-      assert_success "drop-table";
-    ]
-  let () = with_registered_suite "oracle" init
+  let () =
+    suite "oracle" "Test Oracle connection"
+      (List.map assert_success ["connectivity"; "drop-table" ])
 end
 
 
 module DatabaseSQLite =
 struct
-  let init suite =
-    List.iter (add_case suite) [
-      assert_success "insert-1000-entries";
-      assert_true "drop-table"
-        ~expected_failure:true (fun _ -> false) ();
+  suite "sqlite" "Test Sqlite connection" [
+    assert_success "insert-1000-entries";
+    assert_true "drop-table"
+      ~expected_failure:true (fun _ -> false) ();
     ]
-  let () = with_registered_suite "sqlite" init
 end
-
 
 let () = Broken.main ()
