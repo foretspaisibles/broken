@@ -1,5 +1,5 @@
 name="broken"
-version="@version@"
+version="@VERSION@"
 description="Testing Framework"
 requires = "unix"
 archive(byte) = "broken.cma"
