@@ -1,4 +1,4 @@
-(* TestUnitTest -- Testing our unit testing framework
+(* TestBroken -- Testing our unit testing framework
 
 Broken (https://github.com/michipili/broken)
 This file is part of Broken

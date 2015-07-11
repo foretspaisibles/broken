@@ -797,12 +797,12 @@ let bracket setup test tearoff = {
 let prerr_usage () =
   let progname = (Filename.basename Sys.executable_name) in
   eprintf "\
-Usage: %s [-h | -l | suite1 [suite2 [...]]]
+Usage: %s [-h | -l | -x | suite1 [suite2 [...]]]
  Run unitary tests
 Options:
  -h Display a cheerful help message.
  -l List available test suites.
- -x List all test cases marked as expected failures.
+ -x List all test suites marked as expected failures.
 Exit Status:
  The %s program exits 0 on success and 1 if a test case failed.
 " progname progname
