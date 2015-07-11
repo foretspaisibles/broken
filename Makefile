@@ -24,7 +24,7 @@ EXTERNAL=		ocaml.findlib:unix
 CONFIGURE+=		Makefile.config.in
 
 do-test:
-	(cd ${.CURDIR}/testsuite && ${MAKE} test)
+	(cd ${.CURDIR}/testsuite && ${MAKE} clean depend test)
 
 .include "generic.project.mk"
 

@@ -203,29 +203,6 @@ current working directory then deleting the temporary directory after test
 completion. *)
 
 
-(** {6 Test suites} *)
-
-type suite
-(** The abstract type of test suites. *)
-
-val make : ?fixture:fixture -> ?init:(suite -> unit) -> string -> suite
-(** Create a test suite, identified by the string.  If given, the
-fixture applies to the test suite as a whole. *)
-
-val add_case : ?fixture:fixture -> suite -> t -> unit
-(** Add a test case to a test suite. *)
-
-val add_suite : ?fixture:fixture -> suite -> suite -> unit
-(** Add a test suite to a test suite. *)
-
-val add_challenge : suite -> ('a -> t) -> 'a list -> unit
-(** [add_challenge suite f c] prepare a list of test cases by mapping [f]
-    over [c] and add them to [suite].
-
-    This can be used to prepare a large amount of test cases out of
-    static data. *)
-
-
 (** {6 Supervisors} *)
 
 type supervisor
@@ -233,72 +210,52 @@ type supervisor
 
 val verbose : supervisor
 (** A simple supervisor printing a lot of details on stdout and
-terminating with a summary on stderr. *)
+    terminating with a summary on stderr. *)
 
 val concise : supervisor
 (** A simple supervisor printing only details pertaining to test
-failures on stderr.
+    failures on stderr.
 
-A log file is prepared from the standard output of the given
-test suite. *)
+    A log file is prepared from the standard output of the given
+    test suite. *)
 
 val not_implemented: unit -> unit
 (** Used by test case code to signal its supervisor that a feature is
-not yet implemented. *)
+    not yet implemented. *)
 
 val skip_if: bool -> unit
 (** Used by test case code to signal its supervisor that a test should
-not be performed if the given condition is met. *)
+    not be performed if the given condition is met. *)
 
 val only_for: bool -> unit
 (** Used by test case code to signal its supervisor that a test should
-only be performed when the given condition is met.
+    only be performed when the given condition is met.
 
-This is equivalent to [skip_if] with a negated condition. *)
-
-
-(** {6 Managing tests} *)
-
-val register: ?prerequisite:string list -> suite -> unit
-(** Register a test suite.
-
-@param prerequisiste lists the identifiers of test cases whose
-successful completion conditions the sucessful completion of the
-registered test.
-
-For instance if [A] uses [B] and [B] fails, the results for the
-testing of [A] are meaningless, so the tests for [A] have to be
-skept. *)
-
-val package : ?prerequisite:string list -> (string * (string list)) -> unit
-(** [package (name,subsuite)] create an register a test suite called
-[name] containing the test suites listed in [subsuite].
-
-@raise Failure if some prerequisite is not registered.
-@raise Failure is one of the subsuite is not known. *)
-
-val with_registered_suite : ?fixture:fixture -> ?prerequisite:string list -> string -> (suite -> unit) -> unit
-(** [with_registered_suite name init] apply [init] on a fresh new,
-registered suite, called [name].
-
-@raise Failure if some prerequisite is not registered. *)
+    This is equivalent to [skip_if] with a negated condition. *)
 
 
+(** {6 Test suites} *)
 
-val list_expected_failures: unit -> string list
-(** List test cases which are expected to fail. *)
+val suite : ?fixture:fixture -> string -> string -> t list -> unit
+(** [suite ident description lst] create a test suite containing the
+    test cases enumerated by [lst]. *)
 
-val list_suites: unit -> string list
-(** List available test suites. *)
-
-val run: ?supervisor:supervisor -> string -> bool
-(** Run the given test suite. The return value indicates the success
-of the test suites, that is, if each test either returned
-[Success] or [Skipped]. *)
-
-val run_all: ?supervisor:supervisor -> unit -> bool
-(** Run all available test suites. *)
+val package : string -> string -> string list -> unit
+(** [package ident description lst] create a test suite containing
+    the test suites enumerated by [lst]. *)
 
 val main: unit -> unit
 (** Main procedure for unitary tests.  It analyses the command line
-and performs the appropriate actions. *)
+and performs the appropriate actions, which typically involves running tests.
+
+{v
+Usage: %s [-h | -l | suite1 [suite2 [...]]]
+ Run unitary tests
+Options:
+ -h Display a cheerful help message.
+ -l List available test suites.
+ -x List all test cases marked as expected failures.
+ -d Describe available test suites.
+Exit Status:
+ The %s program exits 0 on success and 1 if a test case failed.
+v} *)
