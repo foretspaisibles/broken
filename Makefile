@@ -19,12 +19,11 @@ MODULE=			ocaml.lib:src
 MODULE+=		ocaml.meta:meta
 MODULE+=		ocaml.manual:manual
 
+SUBDIR=			testsuite
+
 EXTERNAL=		ocaml.findlib:unix
 
 CONFIGURE+=		Makefile.config.in
-
-do-test:
-	(cd ${.CURDIR}/testsuite && ${MAKE} clean depend test)
 
 .include "generic.project.mk"
 
