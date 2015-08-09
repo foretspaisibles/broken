@@ -1,9 +1,9 @@
-### Makefile -- ocamlfind META file for Broken
+### debug.mk -- Configuration for developement
 
-# Broken (https://github.com/michipili/broken)
-# This file is part of Broken
+# Shell (https://github.com/michipili/shell)
+# This file is part of Shell
 #
-# Copyright © 2013–2015 Michael Grünewald
+# Copyright © 2015 Michael Grünewald
 #
 # This file must be used under the terms of the CeCILL-B.
 # This source file is licensed as described in the file COPYING, which
@@ -11,8 +11,9 @@
 # are also available at
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.txt
 
-META=			broken
+.if !empty(THISMODULE:Mocaml.*)
+COMPILE=		byte_code
+USES+=			debug
+.endif
 
-.include "ocaml.meta.mk"
-
-### End of file `Makefile'
+### End of file `debug.mk'

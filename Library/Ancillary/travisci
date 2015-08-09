@@ -1,9 +1,11 @@
-### Makefile -- Test suite
+#!/bin/sh
+
+### travisci -- Continuous integration test for travis
 
 # Broken (https://github.com/michipili/broken)
-# This file is part of Broken
+# This file is part of BSD Owl Scripts
 #
-# Copyright © 2014–2015 Michael Grünewald
+# Copyright © 2015 Michael Grünewald
 #
 # This file must be used under the terms of the CeCILL-B.
 # This source file is licensed as described in the file COPYING, which
@@ -11,16 +13,11 @@
 # are also available at
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.txt
 
-PROGRAM=		unit-testing
+INSTALL_PREFIX="${HOME}/.local"
 
-SRCS+=			testBroken.ml
-SRCS+=			main.ml
+eval $(opam config env)
+autoconf
+./configure --prefix="${INSTALL_PREFIX}"
+bmake -I "${INSTALL_PREFIX}/share/bsdowl" all
 
-OCAMLLFLAGS+=		-linkall
-
-do-test: build
-	./unit-testing
-
-.include "ocaml.prog.mk"
-
-### End of file `Makefile'
+### End of file `travisci'

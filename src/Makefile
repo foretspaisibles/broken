@@ -1,9 +1,9 @@
-### Makefile -- Broken
+### Makefile -- Testing framework
 
 # Broken (https://github.com/michipili/broken)
 # This file is part of Broken
 #
-# Copyright © 2013–2015 Michael Grünewald
+# Copyright © 2014–2015 Michael Grünewald
 #
 # This file must be used under the terms of the CeCILL-B.
 # This source file is licensed as described in the file COPYING, which
@@ -11,20 +11,10 @@
 # are also available at
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.txt
 
-PACKAGE=		broken
-VERSION=		v0.3.0
-OFFICER=		michipili@gmail.com
+LIBRARY=		broken
 
-MODULE=			ocaml.lib:src
-MODULE+=		ocaml.meta:meta
-MODULE+=		ocaml.manual:manual
+SRCS+=			broken.ml
 
-SUBDIR=			testsuite
-
-EXTERNAL=		ocaml.findlib:unix
-
-CONFIGURE+=		Makefile.config.in
-
-.include "generic.project.mk"
+.include "ocaml.lib.mk"
 
 ### End of file `Makefile'

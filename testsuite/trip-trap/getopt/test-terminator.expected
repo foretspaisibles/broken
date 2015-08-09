@@ -1,3 +1,0 @@
-flag a
-option s = "--"
-rest = "-a"

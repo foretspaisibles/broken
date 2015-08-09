@@ -1,0 +1,6 @@
+name="broken"
+version="@VERSION@"
+description="Testing Framework"
+requires = "unix"
+archive(byte) = "broken.cma"
+archive(native) = "broken.cmxa"

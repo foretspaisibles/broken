@@ -1,9 +1,0 @@
-let libdir () =
-  "@libdir@"
-
-let gasolinelibdir () =
-  "${LIBDIR}"
-
-let projectbase () =
-  try Some(Sys.getenv "PROJECTBASE")
-  with Not_found -> None

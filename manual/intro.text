@@ -1,62 +1,13 @@
-Gasoline is an application framework for OCaml, it implements components
-and services which can be used to develop OCaml applications. It
-offers:
-
-- Processing of command line arguments
-- A simple and powerful internationalisation-friendly diagnostic facility
-- Analyse of configuration files
-- A cascading system for configuration values, usable to implement
-  site policies Unicode support
-- Stock application patterns, like a Unix filter or a compiler
-
-We call a program using the Gasoline framework a Gasoline guest.
-
-
-{2:testkit The [testkit] library: testing framework}
-
-[testkit] provides testing facilties to implement a testsuite for an
-application.
+Broken is a testing framework for OCaml.
 
 {!modules:
-  UnitTest
+  Broken
 }
 
 
 {3:testkit_blog External articles}
 - {{:https://docs.python.org/2/library/unittest.html} The Python Unit
-  testing framework} which was used as model to implement UnitTest.
-
-
-{2:application The [application] library}
-
-{!modules:
-  SysExits
-  Unicode
-  Getopt
-  CType
-  CMessage
-  CConfigurationMap
-  CApplication
-  ConfigurationMap
-  ConfigurationParser
-  Generic_type
-  Generic_message
-  Generic_diagnostic
-  Generic_asset
-  Generic_component
-  Generic_application
-}
-
-{2:authorkit The [authorkit]}
-
-This small library provides service for authoring, like production of
-simple HTML or SGML files.
-
-{!modules:
-  LoremIpsum
-  WSGML
-  WHTML
-}
+  testing framework} which was used as model to implement Broken.
 
 {1 Trailer}
 
@@ -66,7 +17,10 @@ simple HTML or SGML files.
 
 {2 Authors}
 
-The Gasoline software has been initially written by Michael Grünewald.
+The Broken software has been initially written by Michael Grünewald.
+It started its existence as part of the {b Gasoline} project but is
+now living on its own.
+
 
 {2 Remarks}
 
