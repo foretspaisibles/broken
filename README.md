@@ -1,12 +1,86 @@
-[![Build Status](https://travis-ci.org/michipili/broken.svg?branch=master)](https://travis-ci.org/michipili/broken?branch=master)
-
 # Broken
 
 The Broken project aims at delivering an easy-to use testing framework
 for OCaml.
 
-It is written by Michael Grünewald and is distributed under the
-[CeCILL-B][1] license agreement.
+[![Build Status](https://travis-ci.org/michipili/broken.svg?branch=master)](https://travis-ci.org/michipili/broken?branch=master)
+
+
+## Example of tests
+
+This shows how to create a testsuite `example` containing two test
+cases `opposite` and `not_found` testing for some computation
+returning the value 0 and some other to raise the `Not_found`
+exception:
+
+```ocaml
+suite "example" "Example of unit tests" [
+
+  assert_zero "opposite"
+    (fun (a,b) -> a - b) (1,1);
+
+  assert_exception "not_found"
+    Not_found (fun x -> List.mem x []) 0;
+]
+```
+
+This is a more advanced example, illustrating the use of a custom
+test-case function `assert_maybe_string`, which is specialised in the
+production of test-cases for computations yielding string options,
+that is, computations in the so called *maybe string monad*.
+
+
+```ocaml
+suite "maybe" "Test the maybe monad" [
+
+  assert_maybe_string "map"
+    (Maybe.map String.uppercase) (Some "a") (Some "A");
+
+  assert_maybe_string "map_infix"
+    (Maybe.Infix.( <$> ) String.uppercase) (Some "a") (Some "A");
+
+  assert_maybe_string "apply"
+    (Maybe.apply (Some(String.uppercase))) (Some "a") (Some "A");
+
+  assert_maybe_string "apply_infix"
+    (Maybe.Infix.( <*> ) (Some(String.uppercase))) (Some "a") (Some "A");
+
+  assert_maybe_string "apply_left_1"
+    (Maybe.Infix.( <* ) None) (Some "b") None;
+
+  assert_maybe_string "apply_left_2"
+    (Maybe.Infix.( <* ) (Some "a")) (Some "b") (Some "a");
+
+  assert_maybe_string "apply_right_1"
+    (Maybe.Infix.( >* ) None) (Some "b") None;
+
+  assert_maybe_string "apply_right_2"
+    (Maybe.Infix.( >* ) (Some "a")) (Some "b") (Some "b");
+];
+```
+
+The custom function `assert_maybe_string` is defined by
+
+```ocaml
+let assert_maybe_string id ?expected_failure f a b =
+  assert_equal
+    id
+    ?expected_failure
+    ~printer:(Maybe.format Format.pp_print_string)
+    ~equal:( (=) )
+    f a b
+```
+The [full example][mixture-test] can be found as part of the
+[Mixture][mixture-home] library.
+
+
+## Free software
+
+It is written by Michael Grünewald and is distributed as a free
+software: copying it  and redistributing it is
+very much welcome under conditions of the [CeCILL-B][licence-url]
+licence agreement, found in the [COPYING][licence-en] and
+[COPYING-FR][licence-fr] files of the distribution.
 
 
 ## Setup guide
@@ -46,5 +120,10 @@ Step 7 requires that you can `su -` if you are not already `root`.
 
 Michael Grünewald in Berlin, on June 28, 2015
 
-   [bsdowl-home]:       https://github.com/michipili/bsdowl
-   [bsdowl-install]:    https://github.com/michipili/bsdowl/wiki/Install
+  [licence-url]:        http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
+  [licence-en]:         COPYING
+  [licence-fr]:         COPYING-FR
+  [bsdowl-home]:        https://github.com/michipili/bsdowl
+  [bsdowl-install]:     https://github.com/michipili/bsdowl/wiki/Install
+  [mixture-home]:       https://github.com/michipili/mixture
+  [mixture-test]:       https://github.com/michipili/mixture
