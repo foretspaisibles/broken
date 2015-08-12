@@ -42,6 +42,8 @@ database, or starting a server process.
 A test suite is a collection of test cases, test suites, or
 both.  It is used to aggregate tests that should be executed
 together, for instance, the tests for a given component.
+When a test suite is exercised, all the test suites and all
+the test cases it contains are exercised.
 
 
 {b Test supervisor.}
@@ -239,10 +241,6 @@ val only_for: bool -> unit
 val suite : ?fixture:fixture -> string -> string -> t list -> unit
 (** [suite ident description lst] create a test suite containing the
     test cases enumerated by [lst]. *)
-
-val package : string -> string -> string list -> unit
-(** [package ident description lst] create a test suite containing
-    the test suites enumerated by [lst]. *)
 
 val main: unit -> unit
 (** Main procedure for unitary tests.  It analyses the command line
