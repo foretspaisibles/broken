@@ -10,3 +10,11 @@ addons:
     - ocaml-native-compilers
 install: sh -ex ./Library/Ancillary/autoinstall bmake bsdowl opam
 script: sh -ex ./Library/Ancillary/travisci
+cache:
+  directories:
+  - ${HOME}/.local
+  - ${HOME}/.opam
+env:
+  - TRAVIS_OCAML_VERSION=4.00.1
+  - TRAVIS_OCAML_VERSION=4.01.0
+  - TRAVIS_OCAML_VERSION=4.02.3

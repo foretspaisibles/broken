@@ -3,7 +3,7 @@
 ### travisci -- Continuous integration test for travis
 
 # Broken (https://github.com/michipili/broken)
-# This file is part of BSD Owl Scripts
+# This file is part of Broken
 #
 # Copyright © 2015 Michael Grünewald
 #
@@ -15,7 +15,8 @@
 
 INSTALL_PREFIX="${HOME}/.local"
 
-eval $(opam config env)
+eval $(opam config env --switch ${TRAVIS_OCAML_VERSION})
+
 autoconf
 ./configure --prefix="${INSTALL_PREFIX}"
 bmake -I "${INSTALL_PREFIX}/share/bsdowl" all
