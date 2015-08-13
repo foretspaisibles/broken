@@ -74,6 +74,53 @@ The [full example][mixture-test] can be found as part of the
 [Mixture][mixture-home] library.
 
 
+## Test command line
+
+The function `Broken.main` is the entry point of the unit-testing
+program running our test cases.  It supports a few options, use the
+`-h` option on the command line for a short help:
+
+```
+Usage: unit-testing [-h | -l | -x | suite1 [suite2 [...]]]
+ Run unitary tests
+Options:
+ -h Display a cheerful help message.
+ -l List available test suites.
+ -x List all test suites marked as expected failures.
+Exit Status:
+ The unit-testing program exits 0 on success and 1 if a test case
+ failed.
+ ```
+
+
+## Test journal
+
+Each registered test suite produces a test journal while being run.
+The test journal is in a format reminescent of the UNIX mailbox
+format, where each test case writes a message, whose body is the
+output of the test case and the headers indicate status of the
+execution.  The `assert_equal` function uses its printer to write in
+the journal any difference between the value it expects from a
+computation and the value it actually recieves from it.
+Here is an example of the header of a failed test:
+
+```
+From BROKEN Thu Aug 13 10:06:14 2015
+Test-Case: monad.list.cartesian_product
+Test-Expected: [(1, 4); (1, 5); (2, 4); (2, 5); (3, 4); (3, 5)]
+Test-Got: [(1, 4); (2, 4); (3, 4); (1, 5); (2, 5); (3, 5)]
+Test-Outcome-Brief: ~
+Test-Outcome: failed
+```
+
+Note that the test case is identified with a dotted path, which reads
+as “the test case *cartesian_product* in the test suite *list* in the
+test suite *monad*”, which makes it easy to find the test case
+definition in case of failure.  Complex test cases will likely print
+additional output on *stdout* which is diverted to the body of the
+test journal message.
+
+
 ## Free software
 
 It is written by Michael Grünewald and is distributed as a free
