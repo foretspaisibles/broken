@@ -816,8 +816,12 @@ let usage () =
   exit exit_usage
 
 let main () =
+  let supervisor =
+    try (ignore (Sys.getenv "BROKEN_VERBOSE"); verbose)
+    with Not_found -> concise
+  in
   if Array.length Sys.argv <= 1 then
-    exit (if run_all () then exit_success else exit_failure)
+    exit (if run_all ~supervisor () then exit_success else exit_failure)
   else if Sys.argv.(1) = "-h" then
     help ()
   else if Sys.argv.(1) = "-l" then begin
@@ -827,5 +831,5 @@ let main () =
     List.iter print_endline (list_expected_failures ());
     exit exit_success
   end else
-    exit (if run_several (List.tl (Array.to_list Sys.argv))
+    exit (if run_several ~supervisor (List.tl (Array.to_list Sys.argv))
       then exit_success else exit_failure)
