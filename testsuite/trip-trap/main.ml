@@ -17,17 +17,18 @@ open Broken
 module DatabaseOracle =
 struct
   let () =
-    suite "oracle" "Test Oracle connection"
+    register_suite "oracle" "Test Oracle connection"
       (List.map assert_success ["connectivity"; "drop-table" ])
 end
 
 
 module DatabaseSQLite =
 struct
-  suite "sqlite" "Test Sqlite connection" [
-    assert_success "insert-1000-entries";
-    assert_true "drop-table"
-      ~expected_failure:true (fun _ -> false) ();
+  let () =
+    register_suite "sqlite" "Test Sqlite connection" [
+      assert_success "insert-1000-entries";
+      assert_true "drop-table"
+        ~expected_failure:true (fun _ -> false) ();
     ]
 end
 

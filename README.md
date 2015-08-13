@@ -14,7 +14,7 @@ returning the value 0 and some other to raise the `Not_found`
 exception:
 
 ```ocaml
-suite "example" "Example of unit tests" [
+register_suite "example" "Example of unit tests" [
 
   assert_zero "opposite"
     (fun (a,b) -> a - b) (1,1);
@@ -31,7 +31,7 @@ that is, computations in the so called *maybe string monad*.
 
 
 ```ocaml
-suite "maybe" "Test the maybe monad" [
+register_suite "maybe" "Test the maybe monad" [
 
   assert_maybe_string "map"
     (Maybe.map String.uppercase) (Some "a") (Some "A");

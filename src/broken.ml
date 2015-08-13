@@ -376,18 +376,12 @@ and suite = {
   suite_queue: suite_item Queue.t;
 }
 
-let make_suite ?(fixture = relax) ?init ident description =
-  let suite = {
-    suite_ident = ident;
-    suite_description = description;
-    suite_fixture = fixture;
-    suite_queue = Queue.create();
-  }
-  in
-  ( match init with
-  | Some(f) -> f suite
-  | None -> () );
-  suite
+let make_suite ?(fixture = relax) ident description = {
+  suite_ident = ident;
+  suite_description = description;
+  suite_fixture = fixture;
+  suite_queue = Queue.create();
+}
 
 let add_case ?(fixture = relax) s case =
   Queue.add (Case(fixture, case)) s.suite_queue
@@ -662,35 +656,28 @@ type root = {
 let root_registry =
   Hashtbl.create expected_sz
 
-let register ?(prerequisite = []) suite =
+let register suite =
   Hashtbl.add root_registry suite.suite_ident {
     root_suite = suite;
-    root_prerequisite = prerequisite;
+    root_prerequisite = [];
   }
 
 let mem =
   Hashtbl.mem root_registry
 
-let suite ?fixture ident description lst =
+let register_suite ?fixture ident description lst =
   let s = make_suite ?fixture ident description in
   List.iter (add_case s) lst;
   register s
 
-let package ident description lst =
-  let getsuite x =
-    let r =
-      try Hashtbl.find root_registry x
-      with Not_found -> failwith(sprintf "%s: unknown test suite" x)
-    in
-    if r.root_prerequisite <> [] then
-      failwith(sprintf "%s: has prerequisites" x)
-    else
-      r.root_suite
-  in
-  let suite = make_suite ident description in
-  List.iter (add_suite suite) (List.map getsuite lst);
-  List.iter (Hashtbl.remove root_registry) lst;
-  register suite
+let ( |& ) s c =
+  add_case s c; s
+
+let ( |@ ) s lst =
+  List.iter (add_case s) lst; s
+
+let ( |: ) s lst =
+  List.iter (add_suite s) lst; s
 
 
 module Ident = Set.Make(String)
