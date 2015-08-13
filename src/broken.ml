@@ -613,7 +613,7 @@ object(self)
 
   method case_begin ident case =
     incr stat_case_count;
-    printf "From UNIT-TEST %s\n" (curr_timestamp());
+    printf "From BROKEN %s\n" (curr_timestamp());
     printf "Test-Case: %s\n" ident;
 
   method case_outcome ident case outcome =
