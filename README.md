@@ -1,6 +1,6 @@
 # Broken
 
-The Broken project aims at delivering an easy-to use testing framework
+The **Broken** project aims at delivering an easy-to use testing framework
 for OCaml.
 
 [![Build Status](https://travis-ci.org/michipili/broken.svg?branch=master)](https://travis-ci.org/michipili/broken?branch=master)
@@ -85,8 +85,16 @@ licence agreement, found in the [COPYING][licence-en] and
 
 ## Setup guide
 
+It is easy to install **Broken** using **opam** and its *pinning*
+feature.  In a shell visiting the repository, say
+
+```console
+% opam pin add broken .
+```
+
+It is also possible to install **Broken** manually.
 The installation procedure is based on the portable build system
-[BSD Owl Scripts][bsdowl-home] based on BSD Make.
+[BSD Owl Scripts][bsdowl-home] written for BSD Make.
 
 1. Verify that prerequisites are installed:
    - BSD Make
