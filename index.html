@@ -1,0 +1,207 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Broken by michipili</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Broken</h1>
+        <p>Testsuite Framework</p>
+
+        <p class="view"><a href="https://github.com/michipili/broken">View the Project on GitHub <small>michipili/broken</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/michipili/broken/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/michipili/broken/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/michipili/broken">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="broken" class="anchor" href="#broken" aria-hidden="true"><span class="octicon octicon-link"></span></a>Broken</h1>
+
+<p>The <strong>Broken</strong> project aims at delivering an easy-to use testing framework
+for OCaml.</p>
+
+<p><a href="https://travis-ci.org/michipili/broken?branch=master"><img src="https://travis-ci.org/michipili/broken.svg?branch=master" alt="Build Status"></a></p>
+
+<h2>
+<a id="example-of-tests" class="anchor" href="#example-of-tests" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example of tests</h2>
+
+<p>This shows how to create a testsuite <code>example</code> containing two test
+cases <code>opposite</code> and <code>not_found</code> testing for some computation
+returning the value 0 and some other to raise the <code>Not_found</code>
+exception:</p>
+
+<div class="highlight highlight-ocaml"><pre>register_suite <span class="pl-s"><span class="pl-pds">"</span>example<span class="pl-pds">"</span></span> <span class="pl-s"><span class="pl-pds">"</span>Example of unit tests<span class="pl-pds">"</span></span> [
+
+  assert_zero <span class="pl-s"><span class="pl-pds">"</span>opposite<span class="pl-pds">"</span></span>
+    (<span class="pl-k">fun</span> (<span class="pl-v">a</span>,<span class="pl-v">b</span>) -&gt; a <span class="pl-k">-</span> b) (<span class="pl-c1">1</span>,<span class="pl-c1">1</span>);
+
+  assert_exception <span class="pl-s"><span class="pl-pds">"</span>not_found<span class="pl-pds">"</span></span>
+    <span class="pl-en">Not_found</span> (<span class="pl-k">fun</span> <span class="pl-v">x</span> -&gt; <span class="pl-c1">List.</span>mem x <span class="pl-c1">[]</span>) <span class="pl-c1">0</span>;
+]</pre></div>
+
+<p>This is a more advanced example, illustrating the use of a custom
+test-case function <code>assert_maybe_string</code>, which is specialised in the
+production of test-cases for computations yielding string options,
+that is, computations in the so called <em>maybe string monad</em>.</p>
+
+<div class="highlight highlight-ocaml"><pre>register_suite <span class="pl-s"><span class="pl-pds">"</span>maybe<span class="pl-pds">"</span></span> <span class="pl-s"><span class="pl-pds">"</span>Test the maybe monad<span class="pl-pds">"</span></span> [
+
+  assert_maybe_string <span class="pl-s"><span class="pl-pds">"</span>map<span class="pl-pds">"</span></span>
+    (<span class="pl-c1">Maybe.</span>map <span class="pl-c1">String.</span>uppercase) (<span class="pl-en">Some</span> <span class="pl-s"><span class="pl-pds">"</span>a<span class="pl-pds">"</span></span>) (<span class="pl-en">Some</span> <span class="pl-s"><span class="pl-pds">"</span>A<span class="pl-pds">"</span></span>);
+
+  assert_maybe_string <span class="pl-s"><span class="pl-pds">"</span>map_infix<span class="pl-pds">"</span></span>
+    (<span class="pl-c1">Maybe.Infix.</span>( <span class="pl-k">&lt;</span><span class="pl-k">$&gt;</span> ) <span class="pl-c1">String.</span>uppercase) (<span class="pl-en">Some</span> <span class="pl-s"><span class="pl-pds">"</span>a<span class="pl-pds">"</span></span>) (<span class="pl-en">Some</span> <span class="pl-s"><span class="pl-pds">"</span>A<span class="pl-pds">"</span></span>);
+
+  assert_maybe_string <span class="pl-s"><span class="pl-pds">"</span>apply<span class="pl-pds">"</span></span>
+    (<span class="pl-c1">Maybe.</span>apply (<span class="pl-en">Some</span>(<span class="pl-c1">String.</span>uppercase))) (<span class="pl-en">Some</span> <span class="pl-s"><span class="pl-pds">"</span>a<span class="pl-pds">"</span></span>) (<span class="pl-en">Some</span> <span class="pl-s"><span class="pl-pds">"</span>A<span class="pl-pds">"</span></span>);
+
+  assert_maybe_string <span class="pl-s"><span class="pl-pds">"</span>apply_infix<span class="pl-pds">"</span></span>
+    (<span class="pl-c1">Maybe.Infix.</span>( <span class="pl-k">&lt;</span><span class="pl-k">*&gt;</span> ) (<span class="pl-en">Some</span>(<span class="pl-c1">String.</span>uppercase))) (<span class="pl-en">Some</span> <span class="pl-s"><span class="pl-pds">"</span>a<span class="pl-pds">"</span></span>) (<span class="pl-en">Some</span> <span class="pl-s"><span class="pl-pds">"</span>A<span class="pl-pds">"</span></span>);
+
+  assert_maybe_string <span class="pl-s"><span class="pl-pds">"</span>apply_left_1<span class="pl-pds">"</span></span>
+    (<span class="pl-c1">Maybe.Infix.</span>( <span class="pl-k">&lt;</span><span class="pl-k">*</span> ) <span class="pl-en">None</span>) (<span class="pl-en">Some</span> <span class="pl-s"><span class="pl-pds">"</span>b<span class="pl-pds">"</span></span>) <span class="pl-en">None</span>;
+
+  assert_maybe_string <span class="pl-s"><span class="pl-pds">"</span>apply_left_2<span class="pl-pds">"</span></span>
+    (<span class="pl-c1">Maybe.Infix.</span>( <span class="pl-k">&lt;</span><span class="pl-k">*</span> ) (<span class="pl-en">Some</span> <span class="pl-s"><span class="pl-pds">"</span>a<span class="pl-pds">"</span></span>)) (<span class="pl-en">Some</span> <span class="pl-s"><span class="pl-pds">"</span>b<span class="pl-pds">"</span></span>) (<span class="pl-en">Some</span> <span class="pl-s"><span class="pl-pds">"</span>a<span class="pl-pds">"</span></span>);
+
+  assert_maybe_string <span class="pl-s"><span class="pl-pds">"</span>apply_right_1<span class="pl-pds">"</span></span>
+    (<span class="pl-c1">Maybe.Infix.</span>( <span class="pl-k">&gt;</span><span class="pl-k">*</span> ) <span class="pl-en">None</span>) (<span class="pl-en">Some</span> <span class="pl-s"><span class="pl-pds">"</span>b<span class="pl-pds">"</span></span>) <span class="pl-en">None</span>;
+
+  assert_maybe_string <span class="pl-s"><span class="pl-pds">"</span>apply_right_2<span class="pl-pds">"</span></span>
+    (<span class="pl-c1">Maybe.Infix.</span>( <span class="pl-k">&gt;</span><span class="pl-k">*</span> ) (<span class="pl-en">Some</span> <span class="pl-s"><span class="pl-pds">"</span>a<span class="pl-pds">"</span></span>)) (<span class="pl-en">Some</span> <span class="pl-s"><span class="pl-pds">"</span>b<span class="pl-pds">"</span></span>) (<span class="pl-en">Some</span> <span class="pl-s"><span class="pl-pds">"</span>b<span class="pl-pds">"</span></span>);
+];</pre></div>
+
+<p>The custom function <code>assert_maybe_string</code> is defined by</p>
+
+<div class="highlight highlight-ocaml"><pre><span class="pl-k">let</span> <span class="pl-en">assert_maybe_string</span> <span class="pl-v">id</span> <span class="pl-v">?<span class="pl-ent">expected_failure</span></span> <span class="pl-v">f</span> <span class="pl-v">a</span> <span class="pl-v">b</span> <span class="pl-k">=</span>
+  assert_equal
+    id
+    ?expected_failure
+    <span class="pl-ent">~printer:</span>(<span class="pl-c1">Maybe.</span>format <span class="pl-c1">Format.</span>pp_print_string)
+    <span class="pl-ent">~equal:</span>( (<span class="pl-k">=</span>) )
+    f a b</pre></div>
+
+<p>The <a href="https://github.com/michipili/mixture">full example</a> can be found as part of the
+<a href="https://github.com/michipili/mixture">Mixture</a> library.</p>
+
+<h2>
+<a id="test-command-line" class="anchor" href="#test-command-line" aria-hidden="true"><span class="octicon octicon-link"></span></a>Test command line</h2>
+
+<p>The function <code>Broken.main</code> is the entry point of the unit-testing
+program running our test cases.  It supports a few options, use the
+<code>-h</code> option on the command line for a short help:</p>
+
+<pre><code>Usage: unit-testing [-h | -l | -x | suite1 [suite2 [...]]]
+ Run unitary tests
+Options:
+ -h Display a cheerful help message.
+ -l List available test suites.
+ -x List all test suites marked as expected failures.
+Exit Status:
+ The unit-testing program exits 0 on success and 1 if a test case
+ failed.
+</code></pre>
+
+<h2>
+<a id="test-journal" class="anchor" href="#test-journal" aria-hidden="true"><span class="octicon octicon-link"></span></a>Test journal</h2>
+
+<p>Each registered test suite produces a test journal while being run.
+The test journal is in a format reminescent of the UNIX mailbox
+format, where each test case writes a message, whose body is the
+output of the test case and the headers indicate status of the
+execution.  The <code>assert_equal</code> function uses its printer to write in
+the journal any difference between the value it expects from a
+computation and the value it actually recieves from it.
+Here is an example of the header of a failed test:</p>
+
+<pre><code>From BROKEN Thu Aug 13 10:06:14 2015
+Test-Case: monad.list.cartesian_product
+Test-Expected: [(1, 4); (1, 5); (2, 4); (2, 5); (3, 4); (3, 5)]
+Test-Got: [(1, 4); (2, 4); (3, 4); (1, 5); (2, 5); (3, 5)]
+Test-Outcome-Brief: ~
+Test-Outcome: failed
+</code></pre>
+
+<p>Note that the test case is identified with a dotted path, which reads
+as “the test case <em>cartesian_product</em> in the test suite <em>list</em> in the
+test suite <em>monad</em>”, which makes it easy to find the test case
+definition in case of failure.  Complex test cases will likely print
+additional output on <em>stdout</em> which is diverted to the body of the
+test journal message.</p>
+
+<h2>
+<a id="free-software" class="anchor" href="#free-software" aria-hidden="true"><span class="octicon octicon-link"></span></a>Free software</h2>
+
+<p>It is written by Michael Grünewald and is distributed as a free
+software: copying it  and redistributing it is
+very much welcome under conditions of the <a href="http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html">CeCILL-B</a>
+licence agreement, found in the <a href="COPYING">COPYING</a> and
+<a href="COPYING-FR">COPYING-FR</a> files of the distribution.</p>
+
+<h2>
+<a id="setup-guide" class="anchor" href="#setup-guide" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setup guide</h2>
+
+<p>It is easy to install <strong>Broken</strong> using <strong>opam</strong> and its <em>pinning</em>
+feature.  In a shell visiting the repository, say</p>
+
+<div class="highlight highlight-console"><pre>% <span class="pl-s1">opam pin add broken <span class="pl-c1">.</span></span></pre></div>
+
+<p>It is also possible to install <strong>Broken</strong> manually.
+The installation procedure is based on the portable build system
+<a href="https://github.com/michipili/bsdowl">BSD Owl Scripts</a> written for BSD Make.</p>
+
+<ol>
+<li>
+<p>Verify that prerequisites are installed:</p>
+
+<ul>
+<li>BSD Make</li>
+<li><a href="https://github.com/michipili/bsdowl/wiki/Install">BSD OWl</a></li>
+<li>OCaml</li>
+<li>GNU Autoconf</li>
+</ul>
+</li>
+<li><p>Get the source, either by cloning the repository or by exploding a
+<a href="releases">distribution tarball</a>.</p></li>
+<li><p>Optionally run <code>autoconf</code> to produce a configuration script. This
+is only required if the script is not already present.</p></li>
+<li><p>Run <code>./configure</code>, you can choose the installation prefix with
+<code>--prefix</code>.</p></li>
+<li><p>Run <code>make build</code>.</p></li>
+<li><p>Optionally run <code>make test</code> to test your build.</p></li>
+<li><p>Finally run <code>make install</code>.</p></li>
+</ol>
+
+<p>Depending on how <strong>BSD Make</strong> is called on your system, you may need to
+replace <code>make</code> by <code>bsdmake</code> or <code>bmake</code> in steps 5, 6, and 7.
+The <strong>GNU Make</strong> program usually give up the ghost, croaking
+<code>*** missing separator. Stop.</code> when you mistakingly use it instead of
+<strong>BSD Make</strong>.</p>
+
+<p>Step 7 requires that you can <code>su -</code> if you are not already <code>root</code>.</p>
+
+<p>Michael Grünewald in Berlin, on June 28, 2015</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/michipili">michipili</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
