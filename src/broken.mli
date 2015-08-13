@@ -42,6 +42,8 @@ database, or starting a server process.
 A test suite is a collection of test cases, test suites, or
 both.  It is used to aggregate tests that should be executed
 together, for instance, the tests for a given component.
+When a test suite is exercised, all the test suites and all
+the test cases it contains are exercised.
 
 
 {b Test supervisor.}
@@ -236,13 +238,36 @@ val only_for: bool -> unit
 
 (** {6 Test suites} *)
 
-val suite : ?fixture:fixture -> string -> string -> t list -> unit
-(** [suite ident description lst] create a test suite containing the
-    test cases enumerated by [lst]. *)
+type suite
+(** The abstract type of test suites. *)
 
-val package : string -> string -> string list -> unit
-(** [package ident description lst] create a test suite containing
-    the test suites enumerated by [lst]. *)
+val make_suite : ?fixture:fixture -> string -> string -> suite
+(** [make_suite ident description] create an empty test suite, where test
+    cases and test suites can be added with the infix operators. *)
+
+val add_case : ?fixture:fixture -> suite -> t -> unit
+(** Add a test case to a test suite. *)
+
+val add_suite : ?fixture:fixture -> suite -> suite -> unit
+(** Add a test suite to a test suite. *)
+
+val register : suite -> unit
+(** Register a test suite, so that it name can be exercised from the
+    command line. *)
+
+val register_suite : ?fixture:fixture -> string -> string -> t list -> unit
+(** [register_suite ident description lst] create and register a test
+    suite, containing the test cases [lst]. *)
+
+val ( |& ) : suite -> t -> suite
+(** Add a single test case to a test suite and return the suite. *)
+
+val ( |@ ) : suite -> t list -> suite
+(** Add a list of cases to a test suite and return the suite. *)
+
+val ( |: ) : suite -> suite list -> suite
+(** Add a list of suites to the test suite and return the suite. *)
+
 
 val main: unit -> unit
 (** Main procedure for unitary tests.  It analyses the command line

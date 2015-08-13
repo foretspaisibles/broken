@@ -1,6 +1,6 @@
 # Broken
 
-The Broken project aims at delivering an easy-to use testing framework
+The **Broken** project aims at delivering an easy-to use testing framework
 for OCaml.
 
 [![Build Status](https://travis-ci.org/michipili/broken.svg?branch=master)](https://travis-ci.org/michipili/broken?branch=master)
@@ -14,7 +14,7 @@ returning the value 0 and some other to raise the `Not_found`
 exception:
 
 ```ocaml
-suite "example" "Example of unit tests" [
+register_suite "example" "Example of unit tests" [
 
   assert_zero "opposite"
     (fun (a,b) -> a - b) (1,1);
@@ -31,7 +31,7 @@ that is, computations in the so called *maybe string monad*.
 
 
 ```ocaml
-suite "maybe" "Test the maybe monad" [
+register_suite "maybe" "Test the maybe monad" [
 
   assert_maybe_string "map"
     (Maybe.map String.uppercase) (Some "a") (Some "A");
@@ -74,6 +74,53 @@ The [full example][mixture-test] can be found as part of the
 [Mixture][mixture-home] library.
 
 
+## Test command line
+
+The function `Broken.main` is the entry point of the unit-testing
+program running our test cases.  It supports a few options, use the
+`-h` option on the command line for a short help:
+
+```
+Usage: unit-testing [-h | -l | -x | suite1 [suite2 [...]]]
+ Run unitary tests
+Options:
+ -h Display a cheerful help message.
+ -l List available test suites.
+ -x List all test suites marked as expected failures.
+Exit Status:
+ The unit-testing program exits 0 on success and 1 if a test case
+ failed.
+ ```
+
+
+## Test journal
+
+Each registered test suite produces a test journal while being run.
+The test journal is in a format reminescent of the UNIX mailbox
+format, where each test case writes a message, whose body is the
+output of the test case and the headers indicate status of the
+execution.  The `assert_equal` function uses its printer to write in
+the journal any difference between the value it expects from a
+computation and the value it actually recieves from it.
+Here is an example of the header of a failed test:
+
+```
+From BROKEN Thu Aug 13 10:06:14 2015
+Test-Case: monad.list.cartesian_product
+Test-Expected: [(1, 4); (1, 5); (2, 4); (2, 5); (3, 4); (3, 5)]
+Test-Got: [(1, 4); (2, 4); (3, 4); (1, 5); (2, 5); (3, 5)]
+Test-Outcome-Brief: ~
+Test-Outcome: failed
+```
+
+Note that the test case is identified with a dotted path, which reads
+as “the test case *cartesian_product* in the test suite *list* in the
+test suite *monad*”, which makes it easy to find the test case
+definition in case of failure.  Complex test cases will likely print
+additional output on *stdout* which is diverted to the body of the
+test journal message.
+
+
 ## Free software
 
 It is written by Michael Grünewald and is distributed as a free
@@ -85,8 +132,16 @@ licence agreement, found in the [COPYING][licence-en] and
 
 ## Setup guide
 
+It is easy to install **Broken** using **opam** and its *pinning*
+feature.  In a shell visiting the repository, say
+
+```console
+% opam pin add broken .
+```
+
+It is also possible to install **Broken** manually.
 The installation procedure is based on the portable build system
-[BSD Owl Scripts][bsdowl-home] based on BSD Make.
+[BSD Owl Scripts][bsdowl-home] written for BSD Make.
 
 1. Verify that prerequisites are installed:
    - BSD Make

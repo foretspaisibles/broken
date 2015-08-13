@@ -13,15 +13,27 @@ http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.txt *)
 
 open Broken
 
+let ( |> ) x f =
+  f x
+
 let () =
-  suite "success" "Test assert_success"
+  register_suite "success" "Test assert_success"
     (List.map assert_success [ "a"; "b"; "c"; ]);
-  suite "equal" "Test assert_equal" [
+  register_suite "equal" "Test assert_equal" [
     assert_equal "a"
       ~printer:Format.pp_print_int
       (fun z -> z) 1 1
-  ];
-  package "broken" "Test all broken features" [
-    "equal";
-    "success";
   ]
+
+let () =
+  make_suite "complex" "Test suite building operators"
+  |& assert_success "c"
+  |@ [
+    assert_success "a";
+    assert_success "b"
+  ]
+  |: [
+    make_suite "nested" "A nested suite"
+    |@ [ assert_success "c" ]
+  ]
+  |> register
