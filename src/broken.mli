@@ -265,6 +265,9 @@ val ( |& ) : suite -> t -> suite
 val ( |@ ) : suite -> t list -> suite
 (** Add a list of cases to a test suite and return the suite. *)
 
+val ( |* ) : suite -> suite -> suite
+(** An operator form of add_suite. *)
+
 val ( |: ) : suite -> suite list -> suite
 (** Add a list of suites to the test suite and return the suite. *)
 
