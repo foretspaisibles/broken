@@ -12,7 +12,7 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.txt
 
 PACKAGE=		broken
-VERSION=		0.4.0
+VERSION=		0.4.1
 OFFICER=		michipili@gmail.com
 
 MODULE=			ocaml.lib:src

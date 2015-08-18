@@ -676,6 +676,9 @@ let ( |& ) s c =
 let ( |@ ) s lst =
   List.iter (add_case s) lst; s
 
+let ( |* ) s suite =
+  add_suite s suite; s
+
 let ( |: ) s lst =
   List.iter (add_suite s) lst; s
 
