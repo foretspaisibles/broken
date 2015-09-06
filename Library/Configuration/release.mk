@@ -1,7 +1,7 @@
 ### release.mk -- Configuration for releases
 
-# Shell (https://github.com/michipili/shell)
-# This file is part of Shell
+# Broken (https://github.com/michipili/broken)
+# This file is part of Broken
 #
 # Copyright © 2015 Michael Grünewald
 #

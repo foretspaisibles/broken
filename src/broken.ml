@@ -753,73 +753,131 @@ let rec deep_dependencies
 let dependencies ident =
   set_to_list (deep_dependencies Ident.empty (Ident.add ident Ident.empty))
 
-let rec run ?(supervisor = concise) ident =
-  let supervise r =
-    supervisor#root_run r.root_suite
-  in
-    if mem ident then
-      (List.for_all run (dependencies ident))
-      && (List.for_all supervise (Hashtbl.find_all root_registry ident))
-    else
-      (eprintf "UnitTest: run: test suite not found: %s" ident;
-       exit exit_software)
 
-let run_several ?supervisor list =
-  let is_true x = x in
-  (* Recall that List.for_all is a short-cut and operator *)
-  List.for_all is_true (List.map (run ?supervisor) list)
+module Application =
+struct
 
-let run_all ?supervisor () =
-  run_several ?supervisor (list_suites())
+  type parameter = {
+    verbose: bool;
+    action: action;
+  }
+  and action =
+    | Help
+    | Usage
+    | ListExpectedFailures
+    | ListAvailable
+    | RunAll
+    | RunList of string list
 
+  let progname () =
+    Filename.basename Sys.executable_name
 
+  let usage () =
+    sprintf "Usage: %s [-h | -l | -x | suite1 [suite2 [...]]]
+ Run unitary tests\nOptions:" (progname())
 
-let bracket setup test tearoff = {
-  test with predicate = fun () ->
-    begin
-      setup ();
-      let answer = test.predicate () in
-      tearoff();
-      answer
-    end
-}
-
-let prerr_usage () =
-  let progname = (Filename.basename Sys.executable_name) in
-  eprintf "\
+  let prerr_usage () =
+    eprintf "\
 Usage: %s [-h | -l | -x | suite1 [suite2 [...]]]
- Run unitary tests
+ Run unitary tests\n" (progname())
+
+  let prerr_help () =
+    prerr_usage();
+    eprintf "\
 Options:
  -h Display a cheerful help message.
  -l List available test suites.
  -x List all test suites marked as expected failures.
 Exit Status:
  The %s program exits 0 on success and 1 if a test case failed.
-" progname progname
+" (progname ())
 
-let help () =
-  prerr_usage();
-  exit exit_success
+  let parse () =
+    let action = ref RunAll in
+    let testcases = ref [] in
+    let add case =
+      testcases := case :: !testcases
+    in
+    let spec = [
+      "-h", Arg.Unit(fun () -> action := Help),
+      "Display a cheerful help message.";
+      "-l", Arg.Unit(fun () -> action := ListAvailable),
+      "List available test suites.";
+      "-x", Arg.Unit(fun () -> action := ListExpectedFailures),
+      "List all test suites marked as expected failures.";
+      "-help", Arg.Unit(fun () -> raise (Arg.Bad "unknown option '-help'")),
+      "";
+      "--help", Arg.Unit(fun () -> raise (Arg.Bad "unknown option '--help'")),
+      "";
+    ]
+    in
+    (try Arg.parse spec add (usage())
+     with
+       | Arg.Help(_) -> action := Help
+       | Arg.Bad(_) -> action := Usage);
+    (match !action, !testcases with
+      | RunAll, [] -> ()
+      | RunAll, lst -> action := RunList(List.rev lst)
+      | _, [] -> ()
+      | _, _ -> action := Usage);
+    {
+      verbose =
+        (try (ignore (Sys.getenv "BROKEN_VERBOSE"); true)
+         with Not_found -> false);
+      action = !action;
+    }
 
-let usage () =
-  prerr_usage();
-  exit exit_usage
+  let rec run supervisor ident =
+    let supervise r =
+      supervisor#root_run r.root_suite
+    in
+    if mem ident then
+      (List.for_all (run supervisor) (dependencies ident))
+      && (List.for_all supervise (Hashtbl.find_all root_registry ident))
+    else
+      (eprintf "UnitTest: run: test suite not found: %s" ident;
+       exit exit_software)
+
+  let run_several supervisor lst =
+    let is_true x = x in
+    (* Recall that List.for_all is a short-cut and operator *)
+    List.for_all is_true (List.map (run supervisor) lst)
+
+  let run_all supervisor =
+    run_several supervisor (list_suites())
+
+  let main () =
+    let param = parse () in
+    let supervisor =
+      if param.verbose then
+        verbose
+      else
+        concise
+    in
+    match param.action with
+      | Help ->
+        prerr_help ();
+        exit 0
+      | Usage ->
+        prerr_usage ();
+        exit 64
+      | ListExpectedFailures ->
+        List.iter print_endline (list_expected_failures ());
+        exit 0;
+      | ListAvailable ->
+        List.iter print_endline (list_suites ());
+        exit 0
+      | RunAll ->
+        if run_all supervisor then
+          exit 0
+        else
+          exit 1
+      | RunList(lst) ->
+        if run_several supervisor lst then
+          exit 0
+        else
+          exit 1
+end
 
 let main () =
-  let supervisor =
-    try (ignore (Sys.getenv "BROKEN_VERBOSE"); verbose)
-    with Not_found -> concise
-  in
-  if Array.length Sys.argv <= 1 then
-    exit (if run_all ~supervisor () then exit_success else exit_failure)
-  else if Sys.argv.(1) = "-h" then
-    help ()
-  else if Sys.argv.(1) = "-l" then begin
-    List.iter print_endline (list_suites ());
-    exit exit_success
-  end else if Sys.argv.(1) = "-x" then begin
-    List.iter print_endline (list_expected_failures ());
-    exit exit_success
-  end else
-    exit (if run_several ~supervisor (List.tl (Array.to_list Sys.argv))
-      then exit_success else exit_failure)
+  Application.main ()
